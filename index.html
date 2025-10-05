@@ -1,75 +1,165 @@
-<script>
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const loader = document.getElementById('loader');
-    const analysisOutput = document.getElementById('analysis-output');
-    const assetSelect = document.getElementById('asset-select');
-    
-    // API Key ထည့်တဲ့ input field မလိုတော့ပါ
-    // const apiKeyInput = document.getElementById('api-key-input');
-    
-    // API Key ထည့်တဲ့ HTML အပိုင်းကိုပါ ဖျက်လိုက်ပါ
-    // <label for="api-key-input">...</label>
-    // <input type="password" id="api-key-input" ...>
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamental Analyst AI v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Padauk', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
+        }
+        .glass-card {
+            background: rgba(31, 41, 55, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .spinner {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .asset-select {
+            background-color: #1f2937;
+            border: 1px solid #4b5563;
+            color: #d1d5db;
+        }
+        .output-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+            border-bottom: 2px solid #4b5563;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .output-card ul {
+            list-style-position: inside;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <div class="container mx-auto max-w-4xl w-full">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">Fundamental Analyst AI <span class="text-indigo-400 text-2xl">v2.0</span></h1>
+            <p class="text-lg text-gray-400">အချိန်နှင့်တပြေးညီ ဈေးကွက်သတင်းများကို AI ဖြင့် အသေးစိတ်ခွဲခြမ်းစိတ်ဖြာပါ။</p>
+        </header>
 
-    analyzeBtn.addEventListener('click', getAnalysis);
+        <main class="space-y-6">
+            <div class="glass-card rounded-xl p-6 space-y-4">
+                <div>
+                    <label for="asset-select" class="block mb-2 text-sm font-medium text-white">သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
+                    <select id="asset-select" class="asset-select rounded-lg block w-full p-2.5">
+                        <option value="Gold (XAU/USD)">ရွှေ (Gold - XAU/USD)</option>
+                        <option value="EUR/USD">EUR/USD</option>
+                        <option value="GBP/USD">GBP/USD</option>
+                        <option value="USD/JPY">USD/JPY</option>
+                        <option value="AUD/USD">AUD/USD</option>
+                        <option value="USD/CAD">USD/CAD</option>
+                        <option value="USD/CHF">USD/CHF</option>
+                        <option value="NZD/USD">NZD/USD</option>
+                        <option value="Bitcoin (BTC/USD)">Bitcoin (BTC/USD)</option>
+                        <option value="Crude Oil">ရေနံစိမ်း (Crude Oil)</option>
+                        <option value="S&P 500 Index">S&P 500 Index</option>
+                    </select>
+                </div>
+                <button id="analyze-btn" class="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    သုံးသပ်ချက်ရယူပါ
+                </button>
+            </div>
 
-    async function getAnalysis() {
-        const selectedAsset = assetSelect.value;
-        loader.style.display = 'block';
-        analysisOutput.innerHTML = '';
+            <div id="loader" class="text-center py-10" style="display: none;">
+                <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
+                <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
+            </div>
 
-        try {
-            // Google API အစား ကိုယ့်ရဲ့ Vercel Function ကိုခေါ်ပါ
-            const response = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ selectedAsset: selectedAsset }) // Asset ကို Backend ပို့ပေးပါ
-            });
+            <div id="analysis-output" class="space-y-6">
+                </div>
+        </main>
+    </div>
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'API request failed');
+    <script>
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const loader = document.getElementById('loader');
+        const analysisOutput = document.getElementById('analysis-output');
+        const assetSelect = document.getElementById('asset-select');
+
+        analyzeBtn.addEventListener('click', getAnalysis);
+
+        async function getAnalysis() {
+            const selectedAsset = assetSelect.value;
+            loader.style.display = 'block';
+            analysisOutput.innerHTML = '';
+
+            try {
+                // Google API အစား ကိုယ့်ရဲ့ Vercel Function ကိုခေါ်ပါ
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ selectedAsset: selectedAsset }) // Asset ကို Backend ပို့ပေးပါ
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'API request failed');
+                }
+
+                const data = await response.json();
+                displayResults(data.result);
+
+            } catch (error) {
+                console.error("Error:", error);
+                analysisOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">သုံးသပ်ချက်ရယူရာတွင် အမှားအယွင်းเกิดขึ้นပါသည်။<br>${error.message}</div>`;
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function displayResults(text) {
+            // This function might need a small check in case `text` is undefined or null
+            if (!text) {
+                analysisOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">AI မှ အချက်အလက် ပြန်လည်ရရှိခြင်းမရှိပါ (No content in response).</div>`;
+                return;
             }
 
-            const data = await response.json();
-            displayResults(data.result);
+            const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
+            const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
+            const sentimentMatch = text.match(/### ဈေးကွက်၏ ခံစားချက်([\s\S]*)/);
 
-        } catch (error) {
-            console.error("Error:", error);
-            analysisOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">သုံးသပ်ချက်ရယူရာတွင် အမှားအယွင်းเกิดขึ้นပါသည်။<br>${error.message}</div>`;
-        } finally {
-            loader.style.display = 'none';
+            let html = '';
+
+            if (summaryMatch) {
+                html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
+            }
+            if (calendarMatch) {
+                html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
+            }
+            if (sentimentMatch) {
+                html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
+            }
+            
+            analysisOutput.innerHTML = html;
         }
-    }
 
-    function displayResults(text) {
-        const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
-        const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
-        const sentimentMatch = text.match(/### ဈေးကွက်၏ ခံစားချက်([\s\S]*)/);
-
-        let html = '';
-
-        if (summaryMatch) {
-            html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
+        function formatText(text) {
+            return text
+                .trim()
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
+                .replace(/\* (.*?)/g, '<li>$1</li>')
+                .replace(/^- (.*?)/gm, '<li>$1</li>')
+                .replace(/\n/g, '<br>');
         }
-        if (calendarMatch) {
-            html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
-        }
-        if (sentimentMatch) {
-            html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
-        }
-        
-        analysisOutput.innerHTML = html;
-    }
-
-    function formatText(text) {
-        return text
-            .trim()
-            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-            .replace(/\* (.*?)/g, '<li>$1</li>')
-            .replace(/^- (.*?)/gm, '<li>$1</li>')
-            .replace(/\n/g, '<br>');
-    }
-</script>
+    </script>
+</body>
+</html>
