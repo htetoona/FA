@@ -50,6 +50,29 @@
             margin-bottom: 1rem;
             border-bottom: 1px solid #30363d;
         }
+        
+        /* New Skeleton Loader Styles */
+        .skeleton-loader {
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% {
+                opacity: .5;
+            }
+        }
+        .skeleton-bar {
+            background-color: #21262d;
+            border-radius: 4px;
+        }
+
+        /* New Fade-in Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="min-h-screen p-4 sm:p-6 md:p-8">
@@ -107,16 +130,31 @@
                     <input id="file-upload" type="file" class="hidden" accept="image/*">
                     <p id="file-name" class="text-gray-400 mt-4 text-sm"></p>
                 </div>
-                 <div id="chart-result-container" class="mt-6 grid md:grid-cols-2 gap-6" style="display: none;">
-                    <div id="image-preview" class="glass-card rounded-xl p-4 flex items-center justify-center">
-                        <img src="" alt="Uploaded Chart" class="rounded-lg shadow-lg w-full max-h-[400px] object-contain">
+
+                <div id="chart-result-container" class="mt-6 space-y-6" style="display: none;">
+                    <div id="image-preview" class="glass-card rounded-xl p-4">
+                        <img src="" alt="Uploaded Chart" class="rounded-lg shadow-lg w-full max-h-[500px] object-contain">
                     </div>
+
                     <div class="glass-card rounded-xl p-6">
                         <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
-                        <div id="chart-loader" class="flex items-center" style="display: none;">
-                            <div class="spinner w-8 h-8 rounded-full border-4 border-gray-600"></div>
-                            <p class="ml-4 text-gray-300">သုံးသပ်နေပါသည်...</p>
+                        
+                        <div id="chart-loader" style="display: none;">
+                           <div class="space-y-4 skeleton-loader">
+                                <div class="h-4 skeleton-bar w-3/4"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-5/6"></div>
+                                </div>
+                                <div class="h-4 skeleton-bar w-1/2"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-3/4"></div>
+                                </div>
+                           </div>
                         </div>
+
                         <div id="chart-output" class="text-gray-300 space-y-3 leading-relaxed"></div>
                     </div>
                 </div>
@@ -150,14 +188,12 @@
         fundamentalTabBtn.classList.remove('active');
     });
 
-    // --- Fundamental Analysis Logic ---
+    // --- Fundamental Analysis Logic (No Changes)---
     const fundamentalAnalyzeBtn = document.getElementById('fundamental-analyze-btn');
     const fundamentalLoader = document.getElementById('fundamental-loader');
     const fundamentalOutput = document.getElementById('fundamental-output');
     const assetSelect = document.getElementById('asset-select');
-
     fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
-
     async function getFundamentalAnalysis() {
         fundamentalLoader.style.display = 'block';
         fundamentalOutput.innerHTML = '';
@@ -179,7 +215,6 @@
             fundamentalLoader.style.display = 'none';
         }
     }
-
     function displayFundamentalResults(text) {
         if (!text) {
              fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
@@ -195,7 +230,7 @@
         fundamentalOutput.innerHTML = html;
     }
 
-    // --- Chart Analysis Logic ---
+    // --- Chart Analysis Logic (UPDATED) ---
     const fileUpload = document.getElementById('file-upload');
     const fileNameDisplay = document.getElementById('file-name');
     const chartResultContainer = document.getElementById('chart-result-container');
@@ -206,23 +241,16 @@
 
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
     
-    // Drag and Drop functionality
-    fileDropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileDropZone.classList.add('dragover');
-    });
+    fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
     fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
-    fileDropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileDropZone.classList.remove('dragover');
-        handleFile(e.dataTransfer.files[0]);
-    });
+    fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
     function handleFile(file) {
         if (!file || !file.type.startsWith('image/')) return;
-        fileNameDisplay.textContent = file.name;
-        chartResultContainer.style.display = 'grid';
+        fileNameDisplay.textContent = `Selected: ${file.name}`;
+        chartResultContainer.style.display = 'block';
         chartOutput.innerHTML = '';
+        chartOutput.classList.remove('fade-in');
         const reader = new FileReader();
         reader.onloadend = () => {
             imagePreview.src = reader.result;
@@ -232,16 +260,13 @@
     }
     
     async function analyzeChart(file) {
-        chartLoader.style.display = 'flex';
+        chartLoader.style.display = 'block'; // Show skeleton loader
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    imageData: base64Image,
-                    mimeType: file.type
-                })
+                body: JSON.stringify({ imageData: base64Image, mimeType: file.type })
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -252,11 +277,13 @@
                 .replace(/\n/g, '<br>')
                 .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
                 .replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
+            
             chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
+            chartOutput.classList.add('fade-in'); // Add fade-in animation
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none';
+            chartLoader.style.display = 'none'; // Hide skeleton loader
         }
     }
 
