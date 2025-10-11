@@ -144,7 +144,6 @@
                     <button id="analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">အသေးစိတ် သုံးသပ်ချက်ရယူပါ</button>
                 </div>
                 
-                <!-- New Skeleton Loader for Fundamental Analysis -->
                 <div id="fundamental-skeleton-loader" class="space-y-6" style="display: none;">
                     <div class="glass-card rounded-xl p-6 skeleton-loader">
                         <div class="h-6 skeleton-bar w-1/3 mb-6"></div>
@@ -214,8 +213,6 @@
     </div>
 
 <script>
-    const MY_API_KEY = "AIzaSyB_3JVjaawvFE_HmRXsXU9xAkowByizKDQ"; 
-
     // --- Asset Data ---
     const assets = [
         { name: "ရွှေ (Gold - XAU/USD)", value: "Gold (XAU/USD)" }, { name: "EUR/USD", value: "EUR/USD" },
@@ -224,15 +221,13 @@
         { name: "Bitcoin (BTC/USD)", value: "Bitcoin (BTC/USD)" }, { name: "ရေနံစိမ်း (Crude Oil)", value: "Crude Oil" },
         { name: "S&P 500 Index", value: "S&P 500 Index" }
     ];
-    const defaultSelectedAssets = ["Gold (XAU/USD)"]; // UPDATED: Only Gold is selected by default
+    const defaultSelectedAssets = ["Gold (XAU/USD)"];
 
     // --- DOM Elements ---
     const fundamentalTabBtn = document.getElementById('fundamental-tab-btn');
     const chartTabBtn = document.getElementById('chart-tab-btn');
     const fundamentalTool = document.getElementById('fundamental-tool');
     const chartTool = document.getElementById('chart-tool');
-    
-    // Fundamental Tool Elements
     const analyzeBtn = document.getElementById('analyze-btn');
     const analysisOutput = document.getElementById('analysis-output');
     const assetSelect = document.getElementById('asset-select');
@@ -241,9 +236,7 @@
     const refreshBtn = document.getElementById('refresh-btn');
     const refreshIcon = document.getElementById('refresh-icon');
     const assetCheckboxContainer = document.getElementById('asset-checkbox-container');
-    const fundamentalSkeletonLoader = document.getElementById('fundamental-skeleton-loader'); // ADDED
-    
-    // Chart Tool Elements
+    const fundamentalSkeletonLoader = document.getElementById('fundamental-skeleton-loader');
     const fileUpload = document.getElementById('file-upload');
     const fileNameDisplay = document.getElementById('file-name');
     const chartResultContainer = document.getElementById('chart-result-container');
@@ -294,33 +287,96 @@
             return `<div id="${cardId}" class="glass-card glass-card-hoverable rounded-lg p-3 flex flex-col justify-between"><div class="flex justify-between items-start"><h3 class="font-bold text-white text-sm truncate pr-2">${asset.name}</h3><div class="sentiment-indicator w-2.5 h-2.5 rounded-full bg-gray-600 flex-shrink-0 mt-1"></div></div><div class="card-loader"><div class="spinner w-5 h-5 rounded-full border-2 border-gray-600"></div></div><div class="card-content" style="display: none;"><p class="sentiment-text text-center text-base font-bold">...</p><div class="sentiment-bar-container my-2"><div class="sentiment-bar rounded-full"></div></div><p class="percentage-text text-center text-xs text-gray-400">--% / --%</p></div></div>`;
         }).join('');
     }
-    
-    async function fetchSentimentForAsset(asset) { /* ... (Logic remains the same) ... */ }
-    function updateCardUI(cardElement, data, quote) { /* ... (Logic remains the same) ... */ }
-    async function updateAllCards() { /* ... (Logic remains the same) ... */ }
-    
+
+    async function fetchSentimentForAsset(asset) {
+        const cardId = `card-${asset.value.replace(/[^a-zA-Z0-9]/g, '-')}`;
+        const cardElement = document.getElementById(cardId);
+        if (!cardElement) return;
+
+        try {
+            const response = await fetch('/api/sentiment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ asset })
+            });
+            if (!response.ok) { throw new Error('API Request Failed'); }
+            const data = await response.json();
+            updateCardUI(cardElement, data.result, data.quote);
+        } catch (error) {
+            console.error(`Error for ${asset.name}:`, error);
+            const contentEl = cardElement.querySelector('.card-content');
+            const loaderEl = cardElement.querySelector('.card-loader');
+            loaderEl.style.display = 'none';
+            contentEl.style.display = 'block';
+            contentEl.querySelector('.sentiment-text').innerHTML = `<span class="text-red-500 text-xs">Error</span>`;
+        }
+    }
+
+    function updateCardUI(cardElement, data, quote) {
+        const contentEl = cardElement.querySelector('.card-content');
+        const loaderEl = cardElement.querySelector('.card-loader');
+        loaderEl.style.display = 'none';
+        contentEl.style.display = 'block';
+
+        const barEl = contentEl.querySelector('.sentiment-bar');
+        const sentimentEl = contentEl.querySelector('.sentiment-text');
+        const indicatorEl = cardElement.querySelector('.sentiment-indicator');
+        const percentageEl = contentEl.querySelector('.percentage-text');
+        
+        barEl.style.width = `${data.base_strength}%`;
+        barEl.className = data.base_strength >= 50 ? 'sentiment-bar rounded-full bullish-bar' : 'sentiment-bar rounded-full bearish-bar';
+
+        let sentimentColorClass = 'text-yellow-400', indicatorColorClass = 'bg-yellow-400';
+        if (data.sentiment === 'Bullish') {
+            sentimentColorClass = 'text-green-400'; indicatorColorClass = 'bg-green-500';
+        } else if (data.sentiment === 'Bearish') {
+            sentimentColorClass = 'text-red-400'; indicatorColorClass = 'bg-red-500';
+        }
+        
+        sentimentEl.innerHTML = `<span class="${sentimentColorClass}">${data.sentiment}</span>`;
+        indicatorEl.className = `sentiment-indicator w-2.5 h-2.5 rounded-full ${indicatorColorClass} flex-shrink-0 mt-1`;
+        percentageEl.textContent = (quote === 'Market') ? `${data.base_strength}%` : `${data.base_strength}% / ${data.quote_strength}%`;
+    }
+
+    async function updateAllCards() {
+        const selectedAssets = getSelectedAssets();
+        if (selectedAssets.length === 0) return;
+
+        console.log("Updating selected sentiment cards...");
+        lastUpdatedEl.textContent = `နောက်ဆုံးစစ်ဆေးခဲ့သည့်အချိန်: ${new Date().toLocaleTimeString()}`;
+        
+        refreshBtn.disabled = true;
+        refreshIcon.classList.add('spinner');
+
+        for (const asset of selectedAssets) {
+            await fetchSentimentForAsset(asset);
+        }
+        
+        refreshBtn.disabled = false;
+        refreshIcon.classList.remove('spinner');
+        console.log("Selected cards updated.");
+    }
+
     async function getAnalysis() {
-        fundamentalSkeletonLoader.style.display = 'block'; // UPDATED
+        fundamentalSkeletonLoader.style.display = 'block';
         analysisOutput.innerHTML = '';
         try {
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${MY_API_KEY}`;
-            const selectedAsset = assetSelect.value;
-            const prompt = `Professional Financial Analyst တစ်ယောက်အနေဖြင့် အောက်ပါအချက်များကို တိကျစွာသုံးသပ်ပေးပါ။ အဖြေအားလုံးကို မြန်မာဘာသာဖြင့်သာ ပြန်လည်ဖြေကြားပါ။ အရေးကြီးသော အဖြစ်အပျက်တိုင်းတွင် နေ့စွဲ (Date) ကို ထည့်သွင်းဖော်ပြပါ။ Asset: ${selectedAsset} 1.  **သတင်းအကျဉ်းချုပ် (News Summary):** Google Search ကိုသုံး၍ ${selectedAsset} နှင့်ပတ်သက်သော နောက်ဆုံး 24-48 နာရီအတွင်း အရေးအကြီးဆုံး သတင်းတစ်ပုဒ်ကိုရှာပါ။ **ထိုသတင်းထွက်ခဲ့သည့် နေ့စွဲကို ဖော်ပြပြီး** အဓိကအချက် ၃ ချက်ဖြင့် အကျဉ်းချုပ်ပေးပါ။ ဥပမာ- "(စက်တင်ဘာ ၃၀) - Fed ဥက္ကဌ၏ မိန့်ခွန်းအရ..." 2.  **အရေးကြီးသော စီးပွားရေးသတင်းများ (Economic Calendar):** Google Search ကိုသုံး၍ ${selectedAsset} အပေါ် သက်ရောက်မှုအရှိဆုံးဖြစ်မည့် လာမည့် 48-72 နာရီအတွင်းက Economic Calendar မှ အရေးကြီးဆုံး Event ၁ ခု သို့မဟုတ် ၂ ခုကို ဖော်ပြပါ။ Event တစ်ခုချင်းစီ၏ **ကျင်းပမည့် နေ့စွဲနှင့် အချိန် (သိနိုင်လျှင်)** ကို ထည့်သွင်းဖော်ပြပါ။ ထို့နောက် ဖြစ်နိုင်ခြေရှိသော သက်ရောက်မှု (ဥပမာ- Bullish/Bearish for the asset) ကိုပါ ရှင်းပြပါ။ 3.  **ဈေးကွက်၏ ခံစားချက် (Market Sentiment):** Google Search မှရသော နောက်ဆုံးရသတင်းများနှင့် **မကြာသေးမီက ဖြစ်ပျက်ခဲ့သော အဖြစ်အပျက်များ (ဥပမာ- မနေ့က NFP data အရ...)** ကို အခြေခံ၍ ${selectedAsset} အတွက် လက်ရှိ Market Sentiment ကို (Bullish, Bearish, Neutral) စသဖြင့် သတ်မှတ်ပေးပါ။ သင်၏ သုံးသပ်ချက်အတွက် အကြောင်းผลကို နေ့စွဲများနှင့် ချိတ်ဆက်ပြီး အတိုချုပ်ရှင်းပြပါ။ သင်၏အဖြေကို အောက်ပါပုံစံအတိုင်း ခေါင်းစဉ်များဖြင့် ရှင်းလင်းစွာဖွဲ့စည်းပေးပါ: ### သတင်းအကျဉ်းချုပ် - **[နေ့စွဲ]:** [အချက် ၁] - [အချက် ၂] - [အချက် ၃] ### အရေးကြီးသော စီးပွားရေးသတင်းများ **Event Name:** [Event ရဲ့ နာမည်] **Date & Time:** [နေ့စွဲနှင့် အချိန်] **Potential Impact:** [သက်ရောက်မှု ရှင်းလင်းချက်] ### ဈေးကွက်၏ ခံစားချက် **Sentiment:** [ဥပမာ- Bullish] **Reasoning:** [အကြောင်းผล ရှင်းလင်းချက် (နေ့စွဲများဖြင့်)]`;
-            const payload = { contents: [{ parts: [{ text: prompt }] }], tools: [{ "google_search": {} }] };
-            const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) { const errorData = await response.json(); throw new Error(errorData.error ? errorData.error.message : 'API request failed'); }
-            const result = await response.json();
-            const candidate = result.candidates?.[0];
-            if (candidate && candidate.content?.parts?.[0]?.text) {
-                displayResults(candidate.content.parts[0].text);
-            } else {
-                throw new Error("AI မှ အချက်အလက် ပြန်လည်ရရှိခြင်းမရှိပါ (No content in response).");
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ selectedAsset: assetSelect.value })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
             }
+            const data = await response.json();
+            displayResults(data.result);
         } catch (error) {
             console.error("Error:", error);
             analysisOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">သုံးသပ်ချက်ရယူရာတွင် အမှားအယွင်းเกิดขึ้นပါသည်။<br>${error.message}</div>`;
         } finally {
-            fundamentalSkeletonLoader.style.display = 'none'; // UPDATED
+            fundamentalSkeletonLoader.style.display = 'none';
         }
     }
     
@@ -356,26 +412,17 @@
         chartLoader.style.display = 'block';
         try {
             const base64Image = await fileToBase64(file);
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${MY_API_KEY}`;
-            const prompt = "You are a professional technical analyst. Analyze the provided financial chart image. Identify key patterns, support and resistance levels, indicators, and suggest potential future price movements. Provide the analysis in Burmese language.";
-
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: prompt },
-                        { inlineData: { mimeType: file.type, data: base64Image } }
-                    ]
-                }]
-            };
-
-            const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const response = await fetch('/api/analyze-chart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: base64Image, mimeType: file.type })
+            });
             if (!response.ok) { throw new Error('API request failed'); }
 
-            const result = await response.json();
-            const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            const data = await response.json();
             
-            if (textResponse) {
-                let formattedText = textResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
+            if (data.result) {
+                let formattedText = data.result.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
                 chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
                 chartOutput.classList.add('fade-in');
             } else {
@@ -405,101 +452,6 @@
     });
     refreshBtn.addEventListener('click', updateAllCards);
     analyzeBtn.addEventListener('click', getAnalysis);
-
-    // --- Helper Functions from previous versions (to keep logic complete) ---
-    function parseAsset(assetString) {
-        if (assetString.includes('/')) {
-            let pair = assetString.match(/\((.*?)\)/);
-            if (pair) {
-                const [base, quote] = pair[1].split('/');
-                return { base, quote, pair: assetString };
-            }
-            const [base, quote] = assetString.split('/');
-            return { base, quote, pair: assetString };
-        }
-        return { base: assetString, quote: 'Market', pair: assetString };
-    }
-    
-    async function fetchSentimentForAsset(asset) {
-        const { base, quote, pair } = parseAsset(asset.value);
-        const cardId = `card-${asset.value.replace(/[^a-zA-Z0-9]/g, '-')}`;
-        const cardElement = document.getElementById(cardId);
-        if (!cardElement) return;
-
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${MY_API_KEY}`;
-        const prompt = `Analyze the current fundamental strength of ${base} versus ${quote} based on the very latest news and economic data. Provide a percentage strength for the base asset (${base}) and a percentage strength for the quote asset (${quote}). The two percentages must add up to 100. Based on these percentages, determine the overall market sentiment for the ${pair} as "Bullish", "Bearish", or "Neutral". Your entire response MUST be a single, valid JSON object following this exact format. Do not include any text, explanations, or markdown formatting outside of the JSON object. {"base_strength": <number>,"quote_strength": <number>,"sentiment": "<string>"}`;
-        
-        try {
-            const payload = { contents: [{ parts: [{ text: prompt }] }], tools: [{ "google_search": {} }] };
-            const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) { throw new Error('API Request Failed'); }
-            
-            const result = await response.json();
-            const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            if (textResponse) {
-                const jsonMatch = textResponse.match(/{[\s\S]*}/);
-                if (!jsonMatch) { throw new Error("No JSON found"); }
-                const data = JSON.parse(jsonMatch[0]);
-                updateCardUI(cardElement, data, quote);
-            } else { throw new Error("No content from AI"); }
-        } catch (error) {
-            console.error(`Error for ${asset.name}:`, error);
-            const contentEl = cardElement.querySelector('.card-content');
-            const loaderEl = cardElement.querySelector('.card-loader');
-            loaderEl.style.display = 'none';
-            contentEl.style.display = 'block';
-            contentEl.querySelector('.sentiment-text').innerHTML = `<span class="text-red-500 text-xs">Error</span>`;
-        }
-    }
-
-    function updateCardUI(cardElement, data, quote) {
-        const contentEl = cardElement.querySelector('.card-content');
-        const loaderEl = cardElement.querySelector('.card-loader');
-        loaderEl.style.display = 'none';
-        contentEl.style.display = 'block';
-
-        const barEl = contentEl.querySelector('.sentiment-bar');
-        const sentimentEl = contentEl.querySelector('.sentiment-text');
-        const indicatorEl = cardElement.querySelector('.sentiment-indicator');
-        const percentageEl = contentEl.querySelector('.percentage-text');
-        
-        barEl.style.width = `${data.base_strength}%`;
-        barEl.className = data.base_strength >= 50 ? 'sentiment-bar rounded-full bullish-bar' : 'sentiment-bar rounded-full bearish-bar';
-
-        let sentimentColorClass = 'text-yellow-400';
-        let indicatorColorClass = 'bg-yellow-400';
-
-        if (data.sentiment === 'Bullish') {
-            sentimentColorClass = 'text-green-400'; indicatorColorClass = 'bg-green-500';
-        } else if (data.sentiment === 'Bearish') {
-            sentimentColorClass = 'text-red-400'; indicatorColorClass = 'bg-red-500';
-        }
-        
-        sentimentEl.innerHTML = `<span class="${sentimentColorClass}">${data.sentiment}</span>`;
-        indicatorEl.className = `sentiment-indicator w-2.5 h-2.5 rounded-full ${indicatorColorClass} flex-shrink-0 mt-1`;
-        percentageEl.textContent = (quote === 'Market') ? `${data.base_strength}%` : `${data.base_strength}% / ${data.quote_strength}%`;
-    }
-
-    async function updateAllCards() {
-        const selectedAssets = getSelectedAssets();
-        if (selectedAssets.length === 0) return;
-
-        console.log("Updating selected sentiment cards...");
-        const now = new Date();
-        lastUpdatedEl.textContent = `နောက်ဆုံးစစ်ဆေးခဲ့သည့်အချိန်: ${now.toLocaleTimeString()}`;
-        
-        refreshBtn.disabled = true;
-        refreshIcon.classList.add('spinner');
-
-        for (const asset of selectedAssets) {
-            await fetchSentimentForAsset(asset);
-        }
-        
-        refreshBtn.disabled = false;
-        refreshIcon.classList.remove('spinner');
-        console.log("Selected cards updated.");
-    }
 
     function formatText(text) {
         return text.trim().replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/^- (.*?)/gm, '<li>$1</li>').replace(/\n/g, '<br>');
