@@ -18,7 +18,7 @@ export default async function handler(request, response) {
 
             Asset: ${selectedAsset}
 
-            0.  ** ${selectedAsset} နှင့်ပတ်သက်သော https://www.forexfactory.com/calendar မှရသောအချက်အလတ်တွေဖော်ပြပါ။
+           
 
             1.  **သတင်းအကျဉ်းချုပ် (News Summary):** Google Search ကိုသုံး၍ ${selectedAsset} နှင့်ပတ်သက်သော နောက်ဆုံး 24-48 နာရီအတွင်း အရေးအကြီးဆုံး သတင်းတစ်ပုဒ်ကိုရှာပါ။ **ထိုသတင်းထွက်ခဲ့သည့် နေ့စွဲကို ဖော်ပြပြီး** အဓိကအချက် ၃ ချက်ဖြင့် အကျဉ်းချုပ်ပေးပါ။ ဥပမာ- "(စက်တင်ဘာ ၃၀) - Fed ဥက္ကဌ၏ မိန့်ခွန်းအရ..."
 
@@ -26,6 +26,8 @@ export default async function handler(request, response) {
 
             3.  **ဈေးကွက်၏ ခံစားချက် (Market Sentiment):** Google Search မှရသော နောက်ဆုံးရသတင်းများနှင့် **မကြာသေးမီက ဖြစ်ပျက်ခဲ့သော အဖြစ်အပျက်များ (ဥပမာ- မနေ့က NFP data အရ...)** ကို အခြေခံ၍ ${selectedAsset} အတွက် လက်ရှိ Market Sentiment ကို (Bullish, Bearish, Neutral) စသဖြင့် သတ်မှတ်ပေးပါ။ သင်၏ သုံးသပ်ချက်အတွက် အကြောင်းผลကို နေ့စွဲများနှင့် ချိတ်ဆက်ပြီး အတိုချုပ်ရှင်းပြပါ။
 
+            4.  ** ${selectedAsset} နှင့်ပတ်သက်သော https://www.forexfactory.com/calendar မှရသောအချက်အလတ်တွေဖော်ပြပါ။
+            
             သင်၏အဖြေကို အောက်ပါပုံစံအတိုင်း ခေါင်းစဉ်များဖြင့် ရှင်းလင်းစွာဖွဲ့စည်းပေးပါ-
             ### သတင်းအကျဉ်းချုပ်
             - **[နေ့စွဲ]:** [အချက် ၁]
@@ -40,6 +42,9 @@ export default async function handler(request, response) {
             ### ဈေးကွက်၏ ခံစားချက်
             **Sentiment:** [ဥပမာ- Bullish]
             **Reasoning:** [အကြောင်းผล ရှင်းလင်းချက် (နေ့စွဲများဖြင့်)]
+
+             ### forexfactory.com/calendar
+             ** forexfactory.com/calendar ပုံစံလို ဇယားကွက်ဖြင့်ဖော်ပြပါ။ 
         `;
 
         const payload = {
