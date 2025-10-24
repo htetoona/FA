@@ -18,7 +18,7 @@ export default async function handler(request, response) {
 
             Asset: ${selectedAsset}
 
-            0.  ** https://www.forexfactory.com/calendar မှရသောအချက်အလတ်တွေဖော်ပြပါ။
+            0.  ** ${selectedAsset} နှင့်ပတ်သက်သော https://www.forexfactory.com/calendar မှရသောအချက်အလတ်တွေဖော်ပြပါ။
 
             1.  **သတင်းအကျဉ်းချုပ် (News Summary):** Google Search ကိုသုံး၍ ${selectedAsset} နှင့်ပတ်သက်သော နောက်ဆုံး 24-48 နာရီအတွင်း အရေးအကြီးဆုံး သတင်းတစ်ပုဒ်ကိုရှာပါ။ **ထိုသတင်းထွက်ခဲ့သည့် နေ့စွဲကို ဖော်ပြပြီး** အဓိကအချက် ၃ ချက်ဖြင့် အကျဉ်းချုပ်ပေးပါ။ ဥပမာ- "(စက်တင်ဘာ ၃၀) - Fed ဥက္ကဌ၏ မိန့်ခွန်းအရ..."
 
