@@ -42,9 +42,7 @@ export default async function handler(request, response) {
             ### ဈေးကွက်၏ ခံစားချက်
             **Sentiment:** [ဥပမာ- Bullish]
             **Reasoning:** [အကြောင်းผล ရှင်းလင်းချက် (နေ့စွဲများဖြင့်)]
-
-             ### forexfactory.com/calendar
-             ** forexfactory.com/calendar ပုံစံလို ဇယားကွက်ဖြင့်ဖော်ပြပါ။ 
+ 
         `;
 
         const payload = {
