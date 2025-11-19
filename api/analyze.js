@@ -13,7 +13,11 @@ export default async function handler(request, response) {
 
         const apiKey = process.env.GEMINI_API_KEY;
         // Model name ကို 1.5 flash (stable) သို့မဟုတ် 2.5 preview စိတ်ကြိုက်သုံးနိုင်သည်
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+// ဒီစာကြောင်းကို ရှာပြီး...
+// const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+// ဒီ အသစ်အတိုင်း အတိအကျ ပြောင်းလိုက်ပါ (-001 နောက်ဆုံးမှာ ပါပါတယ်)
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`;
         const prompt = `
             Professional Financial Analyst တစ်ယောက်အနေဖြင့် အောက်ပါအချက်များကို တိကျစွာသုံးသပ်ပေးပါ။ အဖြေအားလုံးကို မြန်မာဘာသာဖြင့်သာ ပြန်လည်ဖြေကြားပါ။ အရေးကြီးသော အဖြစ်အပျက်တိုင်းတွင် နေ့စွဲ (Date) ကို ထည့်သွင်းဖော်ပြပါ။
 
