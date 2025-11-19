@@ -15,7 +15,8 @@ export default async function handler(request, response) {
         }
         
  
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+// ဒီမှာလည်း တူတူပါပဲ (-001 ထည့်ပေးရပါမယ်)
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`;
         const prompt = `Professional Technical Analyst တစ်ယောက်အနေဖြင့် ဤ Trading Chart ပုံကို သုံးသပ်ပါ။ ဈေးကွက်၏ တည်ဆောက်ပုံ (Market Structure)၊ လားရာ (Trend)၊ အဓိက ထောက်တိုင်နှင့် ခုခံမှုနေရာများ (Key Support & Resistance Levels) နှင့် နောက်ဆုံးဖြစ်ပေါ်ခဲ့သော ဈေးနှုန်းလှုပ်ရှားမှု (Recent Price Action) တို့ကို အသေးစိတ်ခွဲခြမ်းစိတ်ဖြာပေးပါ။ Trader တစ်ယောက်၏ ရှုထောင့်မှ ပညာပေးသဘောဖြင့် အနှစ်ချုပ်သုံးသပ်ချက်ဖြင့် အဆုံးသတ်ပေးပါ။ သင်၏ အဖြေကို မြန်မာဘာသာဖြင့်သာ ပြန်လည်ဖြေကြားပါ။`;
 
         const payload = {
