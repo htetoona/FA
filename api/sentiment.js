@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         const { base, quote, pair } = parseAsset(asset.value);
         const prompt = `Analyze the current fundamental strength of ${base} versus ${quote} based on the very latest news and economic data. Provide a percentage strength for the base asset (${base}) and a percentage strength for the quote asset (${quote}). The two percentages must add up to 100. Based on these percentages, determine the overall market sentiment for the ${pair} as "Bullish", "Bearish", or "Neutral". Your entire response MUST be a single, valid JSON object following this exact format. Do not include any text, explanations, or markdown formatting outside of the JSON object. {"base_strength": <number>,"quote_strength": <number>,"sentiment": "<string>"}`;
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
