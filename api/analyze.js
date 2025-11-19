@@ -9,9 +9,10 @@ export default async function handler(request, response) {
             return response.status(400).json({ error: 'Selected asset is required' });
         }
         
-        // Vercel Environment Variable က Key ကို ဒီလိုယူသုံးရပါမယ်
         const apiKey = process.env.GEMINI_API_KEY;
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        
+        // ပြင်ဆင်ထားသည့်အချက် (1): Model Name ကို gemini-1.5-flash သို့ ပြောင်းပါ
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         const prompt = `
             Professional Financial Analyst တစ်ယောက်အနေဖြင့် အောက်ပါအချက်များကို တိကျစွာသုံးသပ်ပေးပါ။ အဖြေအားလုံးကို မြန်မာဘာသာဖြင့်သာ ပြန်လည်ဖြေကြားပါ။ အရေးကြီးသော အဖြစ်အပျက်တိုင်းတွင် နေ့စွဲ (Date) ကို ထည့်သွင်းဖော်ပြပါ။
@@ -22,7 +23,7 @@ export default async function handler(request, response) {
 
             2.  **အရေးကြီးသော စီးပွားရေးသတင်းများ (Economic Calendar):** Google Search ကိုသုံး၍ ${selectedAsset} အပေါ် သက်ရောက်မှုအရှိဆုံးဖြစ်မည့် လာမည့် 48-72 နာရီအတွင်းက Economic Calendar မှ အရေးကြီးဆုံး Event ၁ ခု သို့မဟုတ် ၂ ခုကို ဖော်ပြပါ။ Event တစ်ခုချင်းစီ၏ **ကျင်းပမည့် နေ့စွဲနှင့် အချိန် (သိနိုင်လျှင်)** ကို ထည့်သွင်းဖော်ပြပါ။ ထို့နောက် ဖြစ်နိုင်ခြေရှိသော သက်ရောက်မှု (ဥပမာ- Bullish/Bearish for the asset) ကိုပါ ရှင်းပြပါ။
 
-            3.  **ဈေးကွက်၏ ခံစားချက် (Market Sentiment):** Google Search မှရသော နောက်ဆုံးရသတင်းများနှင့် **မကြာသေးမီက ဖြစ်ပျက်ခဲ့သော အဖြစ်အပျက်များ (ဥပမာ- မနေ့က NFP data အရ...)** ကို အခြေခံ၍ ${selectedAsset} အတွက် လက်ရှိ Market Sentiment ကို (Bullish, Bearish, Neutral) စသဖြင့် သတ်မှတ်ပေးပါ။ သင်၏ သုံးသပ်ချက်အတွက် အကြောင်းผลကို နေ့စွဲများနှင့် ချိတ်ဆက်ပြီး အတိုချုပ်ရှင်းပြပါ။
+            3.  **ဈေးကွက်၏ ခံစားချက် (Market Sentiment):** Google Search မှရသော နောက်ဆုံးရသတင်းများနှင့် **မကြာသေးမီက ဖြစ်ပျက်ခဲ့သော အဖြစ်အပျက်များ (ဥပမာ- မနေ့က NFP data အရ...)** ကို အခြေခံ၍ ${selectedAsset} အတွက် လက်ရှိ Market Sentiment ကို (Bullish, Bearish, Neutral) စသဖြင့် သတ်မှတ်ပေးပါ။ သင်၏ သုံးသပ်ချက်အတွက် အကြောင်းပြချက်ကို နေ့စွဲများနှင့် ချိတ်ဆက်ပြီး အတိုချုပ်ရှင်းပြပါ။
 
             သင်၏အဖြေကို အောက်ပါပုံစံအတိုင်း ခေါင်းစဉ်များဖြင့် ရှင်းလင်းစွာဖွဲ့စည်းပေးပါ-
             ### သတင်းအကျဉ်းချုပ်
@@ -37,12 +38,13 @@ export default async function handler(request, response) {
 
             ### ဈေးကွက်၏ ခံစားချက်
             **Sentiment:** [ဥပမာ- Bullish]
-            **Reasoning:** [အကြောင်းผล ရှင်းလင်းချက် (နေ့စွဲများဖြင့်)]
+            **Reasoning:** [အကြောင်းပြချက် ရှင်းလင်းချက် (နေ့စွဲများဖြင့်)]
         `;
 
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
-            tools: [{ "google_search": {} }]
+            // Google Search Tool ထည့်သွင်းခြင်း
+            tools: [{ "google_search": {} }] 
         };
 
         const geminiResponse = await fetch(API_URL, {
@@ -53,6 +55,8 @@ export default async function handler(request, response) {
 
         if (!geminiResponse.ok) {
             const errorData = await geminiResponse.json();
+            // Error အသေးစိတ်ကို console မှာထုတ်ကြည့်ရန်
+            console.error("Gemini API Error Detail:", JSON.stringify(errorData, null, 2)); 
             throw new Error(errorData.error ? errorData.error.message : 'API request failed');
         }
 
