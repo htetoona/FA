@@ -11,8 +11,8 @@ export default async function handler(request, response) {
         
         const apiKey = process.env.GEMINI_API_KEY;
         
-        // ပြင်ဆင်ထားသည့်အချက် (1): Model Name ကို gemini-1.5-flash သို့ ပြောင်းပါ
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        // ပြင်ဆင်ထားသည့်အချက်: Model name ကို version အပြည့်အစုံဖြင့် 'gemini-1.5-flash-latest' သို့ ပြောင်းထားပါသည်
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
         const prompt = `
             Professional Financial Analyst တစ်ယောက်အနေဖြင့် အောက်ပါအချက်များကို တိကျစွာသုံးသပ်ပေးပါ။ အဖြေအားလုံးကို မြန်မာဘာသာဖြင့်သာ ပြန်လည်ဖြေကြားပါ။ အရေးကြီးသော အဖြစ်အပျက်တိုင်းတွင် နေ့စွဲ (Date) ကို ထည့်သွင်းဖော်ပြပါ။
@@ -43,8 +43,7 @@ export default async function handler(request, response) {
 
         const payload = {
             contents: [{ parts: [{ text: prompt }] }],
-            // Google Search Tool ထည့်သွင်းခြင်း
-            tools: [{ "google_search": {} }] 
+            tools: [{ "google_search": {} }]
         };
 
         const geminiResponse = await fetch(API_URL, {
@@ -55,7 +54,6 @@ export default async function handler(request, response) {
 
         if (!geminiResponse.ok) {
             const errorData = await geminiResponse.json();
-            // Error အသေးစိတ်ကို console မှာထုတ်ကြည့်ရန်
             console.error("Gemini API Error Detail:", JSON.stringify(errorData, null, 2)); 
             throw new Error(errorData.error ? errorData.error.message : 'API request failed');
         }
