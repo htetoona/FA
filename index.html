@@ -19,13 +19,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-         .glass-card-hoverable {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .glass-card-hoverable:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
         .spinner {
             border-top-color: #58a6ff;
             animation: spin 1s linear infinite;
@@ -57,39 +50,22 @@
             margin-bottom: 1rem;
             border-bottom: 1px solid #30363d;
         }
-        .sentiment-bar-container {
-            background-color: #374151;
-            border-radius: 9999px;
-            overflow: hidden;
-            height: 6px;
-        }
-        .sentiment-bar {
-            transition: width 0.5s ease-in-out;
-            height: 100%;
-        }
-        .bullish-bar { background-color: #22c55e; }
-        .bearish-bar { background-color: #ef4444; }
-        .card-loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 75px;
-        }
-        .asset-checkbox {
-            color: #4f46e5;
-            background-color: #374151;
-            border-color: #4b5563;
-        }
+        
+        /* New Skeleton Loader Styles */
         .skeleton-loader {
             animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         @keyframes pulse {
-            50% { opacity: .5; }
+            50% {
+                opacity: .5;
+            }
         }
         .skeleton-bar {
             background-color: #21262d;
             border-radius: 4px;
         }
+
+        /* New Fade-in Animation */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -114,65 +90,33 @@
         </div>
 
         <main>
-            <!-- ===== Fundamental Analysis Tool ===== -->
-            <div id="fundamental-tool" class="space-y-6">
-                <div class="glass-card rounded-xl p-6">
-                    <h2 class="text-xl font-bold text-white mb-4">ကြည့်ရှုလိုသော Asset များကိုရွေးပါ</h2>
-                    <div id="asset-checkbox-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-3">
-                    </div>
-                </div>
-
-                <div class="glass-card rounded-xl p-6">
-                    <div class="flex justify-between items-center mb-4">
-                         <h2 class="text-2xl font-bold text-white">Sentiment Dashboard</h2>
-                         <div class="flex items-center space-x-4">
-                            <p class="text-xs text-gray-400" id="last-updated">နောက်ဆုံးစစ်ဆေးခဲ့သည့်အချိန်: -</p>
-                            <button id="refresh-btn" class="flex items-center px-3 py-1.5 border border-gray-600 text-xs font-medium rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600 transition disabled:opacity-50">
-                                <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise mr-2" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/></svg>
-                                Refresh
-                            </button>
-                         </div>
-                    </div>
-                    <div id="realtime-grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-                </div>
-
+            <div id="fundamental-tool">
                 <div class="glass-card rounded-xl p-6 space-y-4">
-                    <div>
-                        <label for="asset-select" class="block mb-2 text-sm font-medium text-white">အသေးစိတ်သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
-                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg"></select>
+                     <div>
+                        <label for="asset-select" class="block mb-2 text-sm font-medium text-white">သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
+                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg">
+                            <option value="Gold (XAU/USD)">ရွှေ (Gold - XAU/USD)</option>
+                            <option value="EUR/USD">EUR/USD</option>
+                            <option value="GBP/USD">GBP/USD</option>
+                            <option value="USD/JPY">USD/JPY</option>
+                            <option value="AUD/USD">AUD/USD</option>
+                            <option value="USD/CAD">USD/CAD</option>
+                            <option value="USD/CHF">USD/CHF</option>
+                            <option value="NZD/USD">NZD/USD</option>
+                            <option value="Bitcoin (BTC/USD)">Bitcoin (BTC/USD)</option>
+                            <option value="Crude Oil">ရေနံစိမ်း (Crude Oil)</option>
+                            <option value="S&P 500 Index">S&P 500 Index</option>
+                        </select>
                     </div>
-                    <button id="analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">အသေးစိတ် သုံးသပ်ချက်ရယူပါ</button>
+                    <button id="fundamental-analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">သုံးသပ်ချက်ရယူပါ</button>
                 </div>
-                
-                <div id="fundamental-skeleton-loader" class="space-y-6" style="display: none;">
-                    <div class="glass-card rounded-xl p-6 skeleton-loader">
-                        <div class="h-6 skeleton-bar w-1/3 mb-6"></div>
-                        <div class="space-y-3">
-                            <div class="h-4 skeleton-bar w-full"></div>
-                            <div class="h-4 skeleton-bar w-5/6"></div>
-                            <div class="h-4 skeleton-bar w-full"></div>
-                        </div>
-                    </div>
-                    <div class="glass-card rounded-xl p-6 skeleton-loader">
-                        <div class="h-6 skeleton-bar w-1/2 mb-6"></div>
-                        <div class="space-y-3">
-                            <div class="h-4 skeleton-bar w-3/4"></div>
-                            <div class="h-4 skeleton-bar w-full"></div>
-                        </div>
-                    </div>
-                    <div class="glass-card rounded-xl p-6 skeleton-loader">
-                        <div class="h-6 skeleton-bar w-2/5 mb-6"></div>
-                        <div class="space-y-3">
-                            <div class="h-4 skeleton-bar w-full"></div>
-                            <div class="h-4 skeleton-bar w-4/6"></div>
-                        </div>
-                    </div>
+                <div id="fundamental-loader" class="text-center py-10" style="display: none;">
+                    <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
+                    <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
                 </div>
-
-                <div id="analysis-output" class="space-y-6"></div>
+                <div id="fundamental-output" class="mt-6 space-y-6"></div>
             </div>
 
-            <!-- ===== Chart Analysis Tool ===== -->
             <div id="chart-tool" style="display: none;">
                 <div id="file-drop-zone" class="glass-card rounded-xl p-8 text-center">
                     <label for="file-upload" class="cursor-pointer">
@@ -186,20 +130,31 @@
                     <input id="file-upload" type="file" class="hidden" accept="image/*">
                     <p id="file-name" class="text-gray-400 mt-4 text-sm"></p>
                 </div>
+
                 <div id="chart-result-container" class="mt-6 space-y-6" style="display: none;">
                     <div id="image-preview" class="glass-card rounded-xl p-4">
                         <img src="" alt="Uploaded Chart" class="rounded-lg shadow-lg w-full max-h-[500px] object-contain">
                     </div>
+
                     <div class="glass-card rounded-xl p-6">
                         <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
+                        
                         <div id="chart-loader" style="display: none;">
                            <div class="space-y-4 skeleton-loader">
-                               <div class="h-4 skeleton-bar w-3/4"></div>
-                               <div class="space-y-2"><div class="h-3 skeleton-bar w-full"></div><div class="h-3 skeleton-bar w-5/6"></div></div>
-                               <div class="h-4 skeleton-bar w-1/2"></div>
-                               <div class="space-y-2"><div class="h-3 skeleton-bar w-full"></div><div class="h-3 skeleton-bar w-full"></div><div class="h-3 skeleton-bar w-3/4"></div></div>
+                                <div class="h-4 skeleton-bar w-3/4"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-5/6"></div>
+                                </div>
+                                <div class="h-4 skeleton-bar w-1/2"></div>
+                                <div class="space-y-2">
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-full"></div>
+                                    <div class="h-3 skeleton-bar w-3/4"></div>
+                                </div>
                            </div>
                         </div>
+
                         <div id="chart-output" class="text-gray-300 space-y-3 leading-relaxed"></div>
                     </div>
                 </div>
@@ -213,153 +168,35 @@
     </div>
 
 <script>
-    // --- Asset Data ---
-    const assets = [
-        { name: "ရွှေ (Gold - XAU/USD)", value: "Gold (XAU/USD)" }, { name: "EUR/USD", value: "EUR/USD" },
-        { name: "GBP/USD", value: "GBP/USD" }, { name: "USD/JPY", value: "USD/JPY" }, { name: "AUD/USD", value: "AUD/USD" },
-        { name: "USD/CAD", value: "USD/CAD" }, { name: "USD/CHF", value: "USD/CHF" }, { name: "NZD/USD", value: "NZD/USD" },
-        { name: "Bitcoin (BTC/USD)", value: "Bitcoin (BTC/USD)" }, { name: "ရေနံစိမ်း (Crude Oil)", value: "Crude Oil" },
-        { name: "S&P 500 Index", value: "S&P 500 Index" }
-    ];
-    const defaultSelectedAssets = ["Gold (XAU/USD)"];
-
-    // --- DOM Elements ---
+    // --- Tab Switching Logic ---
     const fundamentalTabBtn = document.getElementById('fundamental-tab-btn');
     const chartTabBtn = document.getElementById('chart-tab-btn');
     const fundamentalTool = document.getElementById('fundamental-tool');
     const chartTool = document.getElementById('chart-tool');
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const analysisOutput = document.getElementById('analysis-output');
-    const assetSelect = document.getElementById('asset-select');
-    const gridContainer = document.getElementById('realtime-grid-container');
-    const lastUpdatedEl = document.getElementById('last-updated');
-    const refreshBtn = document.getElementById('refresh-btn');
-    const refreshIcon = document.getElementById('refresh-icon');
-    const assetCheckboxContainer = document.getElementById('asset-checkbox-container');
-    const fundamentalSkeletonLoader = document.getElementById('fundamental-skeleton-loader');
-    const fileUpload = document.getElementById('file-upload');
-    const fileNameDisplay = document.getElementById('file-name');
-    const chartResultContainer = document.getElementById('chart-result-container');
-    const imagePreview = document.querySelector('#image-preview img');
-    const chartLoader = document.getElementById('chart-loader');
-    const chartOutput = document.getElementById('chart-output');
-    const fileDropZone = document.getElementById('file-drop-zone');
 
-    // --- Tab Switching Logic ---
     fundamentalTabBtn.addEventListener('click', () => {
-        fundamentalTool.style.display = 'block'; chartTool.style.display = 'none';
-        fundamentalTabBtn.classList.add('active'); chartTabBtn.classList.remove('active');
+        fundamentalTool.style.display = 'block';
+        chartTool.style.display = 'none';
+        fundamentalTabBtn.classList.add('active');
+        chartTabBtn.classList.remove('active');
     });
+
     chartTabBtn.addEventListener('click', () => {
-        fundamentalTool.style.display = 'none'; chartTool.style.display = 'block';
-        chartTabBtn.classList.add('active'); fundamentalTabBtn.classList.remove('active');
+        fundamentalTool.style.display = 'none';
+        chartTool.style.display = 'block';
+        chartTabBtn.classList.add('active');
+        fundamentalTabBtn.classList.remove('active');
     });
 
-    // --- Fundamental Analysis Logic ---
-    function initializeFundamentalUI() {
-        let checkboxHTML = '', selectHTML = '';
-        assets.forEach(asset => {
-            const isChecked = defaultSelectedAssets.includes(asset.value) ? 'checked' : '';
-            checkboxHTML += `<label class="flex items-center space-x-2 text-sm text-gray-200 cursor-pointer hover:text-white"><input type="checkbox" value="${asset.value}" class="asset-checkbox w-4 h-4 rounded focus:ring-indigo-500" ${isChecked}><span>${asset.name}</span></label>`;
-            selectHTML += `<option value="${asset.value}">${asset.name}</option>`;
-        });
-        assetCheckboxContainer.innerHTML = checkboxHTML;
-        assetSelect.innerHTML = selectHTML;
-        document.querySelectorAll('.asset-checkbox').forEach(cb => cb.addEventListener('change', () => { renderDashboardGrid(); updateAllCards(); }));
-    }
-
-    function getSelectedAssets() {
-        const selected = [];
-        document.querySelectorAll('.asset-checkbox:checked').forEach(checkbox => {
-            const assetObject = assets.find(a => a.value === checkbox.value);
-            if (assetObject) selected.push(assetObject);
-        });
-        return selected;
-    }
-
-    function renderDashboardGrid() {
-        const selectedAssets = getSelectedAssets();
-        if (selectedAssets.length === 0) {
-            gridContainer.innerHTML = `<p class="text-gray-400 col-span-full text-center py-4">ကျေးဇူးပြု၍ အပေါ်မှ asset များကို အမှတ်ခြစ်ရွေးချယ်ပေးပါ။</p>`; return;
-        }
-        gridContainer.innerHTML = selectedAssets.map(asset => {
-            const cardId = `card-${asset.value.replace(/[^a-zA-Z0-9]/g, '-')}`;
-            return `<div id="${cardId}" class="glass-card glass-card-hoverable rounded-lg p-3 flex flex-col justify-between"><div class="flex justify-between items-start"><h3 class="font-bold text-white text-sm truncate pr-2">${asset.name}</h3><div class="sentiment-indicator w-2.5 h-2.5 rounded-full bg-gray-600 flex-shrink-0 mt-1"></div></div><div class="card-loader"><div class="spinner w-5 h-5 rounded-full border-2 border-gray-600"></div></div><div class="card-content" style="display: none;"><p class="sentiment-text text-center text-base font-bold">...</p><div class="sentiment-bar-container my-2"><div class="sentiment-bar rounded-full"></div></div><p class="percentage-text text-center text-xs text-gray-400">--% / --%</p></div></div>`;
-        }).join('');
-    }
-
-    async function fetchSentimentForAsset(asset) {
-        const cardId = `card-${asset.value.replace(/[^a-zA-Z0-9]/g, '-')}`;
-        const cardElement = document.getElementById(cardId);
-        if (!cardElement) return;
-
-        try {
-            const response = await fetch('/api/sentiment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ asset })
-            });
-            if (!response.ok) { throw new Error('API Request Failed'); }
-            const data = await response.json();
-            updateCardUI(cardElement, data.result, data.quote);
-        } catch (error) {
-            console.error(`Error for ${asset.name}:`, error);
-            const contentEl = cardElement.querySelector('.card-content');
-            const loaderEl = cardElement.querySelector('.card-loader');
-            loaderEl.style.display = 'none';
-            contentEl.style.display = 'block';
-            contentEl.querySelector('.sentiment-text').innerHTML = `<span class="text-red-500 text-xs">Error</span>`;
-        }
-    }
-
-    function updateCardUI(cardElement, data, quote) {
-        const contentEl = cardElement.querySelector('.card-content');
-        const loaderEl = cardElement.querySelector('.card-loader');
-        loaderEl.style.display = 'none';
-        contentEl.style.display = 'block';
-
-        const barEl = contentEl.querySelector('.sentiment-bar');
-        const sentimentEl = contentEl.querySelector('.sentiment-text');
-        const indicatorEl = cardElement.querySelector('.sentiment-indicator');
-        const percentageEl = contentEl.querySelector('.percentage-text');
-        
-        barEl.style.width = `${data.base_strength}%`;
-        barEl.className = data.base_strength >= 50 ? 'sentiment-bar rounded-full bullish-bar' : 'sentiment-bar rounded-full bearish-bar';
-
-        let sentimentColorClass = 'text-yellow-400', indicatorColorClass = 'bg-yellow-400';
-        if (data.sentiment === 'Bullish') {
-            sentimentColorClass = 'text-green-400'; indicatorColorClass = 'bg-green-500';
-        } else if (data.sentiment === 'Bearish') {
-            sentimentColorClass = 'text-red-400'; indicatorColorClass = 'bg-red-500';
-        }
-        
-        sentimentEl.innerHTML = `<span class="${sentimentColorClass}">${data.sentiment}</span>`;
-        indicatorEl.className = `sentiment-indicator w-2.5 h-2.5 rounded-full ${indicatorColorClass} flex-shrink-0 mt-1`;
-        percentageEl.textContent = (quote === 'Market') ? `${data.base_strength}%` : `${data.base_strength}% / ${data.quote_strength}%`;
-    }
-
-    async function updateAllCards() {
-        const selectedAssets = getSelectedAssets();
-        if (selectedAssets.length === 0) return;
-
-        console.log("Updating selected sentiment cards...");
-        lastUpdatedEl.textContent = `နောက်ဆုံးစစ်ဆေးခဲ့သည့်အချိန်: ${new Date().toLocaleTimeString()}`;
-        
-        refreshBtn.disabled = true;
-        refreshIcon.classList.add('spinner');
-
-        for (const asset of selectedAssets) {
-            await fetchSentimentForAsset(asset);
-        }
-        
-        refreshBtn.disabled = false;
-        refreshIcon.classList.remove('spinner');
-        console.log("Selected cards updated.");
-    }
-
-    async function getAnalysis() {
-        fundamentalSkeletonLoader.style.display = 'block';
-        analysisOutput.innerHTML = '';
+    // --- Fundamental Analysis Logic (No Changes)---
+    const fundamentalAnalyzeBtn = document.getElementById('fundamental-analyze-btn');
+    const fundamentalLoader = document.getElementById('fundamental-loader');
+    const fundamentalOutput = document.getElementById('fundamental-output');
+    const assetSelect = document.getElementById('asset-select');
+    fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
+    async function getFundamentalAnalysis() {
+        fundamentalLoader.style.display = 'block';
+        fundamentalOutput.innerHTML = '';
         try {
             const response = await fetch('/api/analyze', {
                 method: 'POST',
@@ -371,28 +208,39 @@
                 throw new Error(errorData.error || 'API request failed');
             }
             const data = await response.json();
-            displayResults(data.result);
+            displayFundamentalResults(data.result);
         } catch (error) {
-            console.error("Error:", error);
-            analysisOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">သုံးသပ်ချက်ရယူရာတွင် အမှားအယွင်းเกิดขึ้นပါသည်။<br>${error.message}</div>`;
+            fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">Error: ${error.message}</div>`;
         } finally {
-            fundamentalSkeletonLoader.style.display = 'none';
+            fundamentalLoader.style.display = 'none';
         }
     }
-    
-    function displayResults(text) {
+    function displayFundamentalResults(text) {
+        if (!text) {
+             fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
+             return;
+        }
         const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
         const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
         const sentimentMatch = text.match(/### ဈေးကွက်၏ ခံစားချက်([\s\S]*)/);
         let html = '';
-        if (summaryMatch) { html += `<div class="output-card glass-card rounded-xl p-6 fade-in"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`; }
-        if (calendarMatch) { html += `<div class="output-card glass-card rounded-xl p-6 fade-in" style="animation-delay: 0.1s;"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`; }
-        if (sentimentMatch) { html += `<div class="output-card glass-card rounded-xl p-6 fade-in" style="animation-delay: 0.2s;"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`; }
-        analysisOutput.innerHTML = html;
+        if (summaryMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
+        if (calendarMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
+        if (sentimentMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
+        fundamentalOutput.innerHTML = html;
     }
-    
-    // --- Chart Analysis Logic ---
+
+    // --- Chart Analysis Logic (UPDATED) ---
+    const fileUpload = document.getElementById('file-upload');
+    const fileNameDisplay = document.getElementById('file-name');
+    const chartResultContainer = document.getElementById('chart-result-container');
+    const imagePreview = document.querySelector('#image-preview img');
+    const chartLoader = document.getElementById('chart-loader');
+    const chartOutput = document.getElementById('chart-output');
+    const fileDropZone = document.getElementById('file-drop-zone');
+
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    
     fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
     fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
     fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
@@ -404,12 +252,15 @@
         chartOutput.innerHTML = '';
         chartOutput.classList.remove('fade-in');
         const reader = new FileReader();
-        reader.onloadend = () => { imagePreview.src = reader.result; analyzeChart(file); };
+        reader.onloadend = () => {
+            imagePreview.src = reader.result;
+            analyzeChart(file);
+        };
         reader.readAsDataURL(file);
     }
-
+    
     async function analyzeChart(file) {
-        chartLoader.style.display = 'block';
+        chartLoader.style.display = 'block'; // Show skeleton loader
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
@@ -417,21 +268,22 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ imageData: base64Image, mimeType: file.type })
             });
-            if (!response.ok) { throw new Error('API request failed'); }
-
-            const data = await response.json();
-            
-            if (data.result) {
-                let formattedText = data.result.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
-                chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
-                chartOutput.classList.add('fade-in');
-            } else {
-                throw new Error("AI မှ သုံးသပ်ချက်မရရှိပါ။");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
             }
+            const data = await response.json();
+            let formattedText = data.result
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
+                .replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
+            
+            chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
+            chartOutput.classList.add('fade-in'); // Add fade-in animation
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none';
+            chartLoader.style.display = 'none'; // Hide skeleton loader
         }
     }
 
@@ -443,20 +295,11 @@
             reader.onerror = error => reject(error);
         });
     }
-
-    // --- Initialization and Event Listeners ---
-    document.addEventListener('DOMContentLoaded', () => {
-        initializeFundamentalUI();
-        renderDashboardGrid();
-        updateAllCards();
-    });
-    refreshBtn.addEventListener('click', updateAllCards);
-    analyzeBtn.addEventListener('click', getAnalysis);
-
+    
+    // --- Common Formatting Function ---
     function formatText(text) {
         return text.trim().replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/^- (.*?)/gm, '<li>$1</li>').replace(/\n/g, '<br>');
     }
 </script>
 </body>
 </html>
-
