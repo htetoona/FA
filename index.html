@@ -22,13 +22,13 @@
 
         /* --- Updated Spinner CSS --- */
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3); /* နောက်ခံ အဖြူဖျော့ */
-            border-left-color: #22D3EE; /* Cyan အရောင် (သင်လိုချင်သောအရောင်) */
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-left-color: #22D3EE;
             border-radius: 50%;
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
-            margin: 0 auto; /* အလယ်တည့်တည့်ထားရန် */
+            margin: 0 auto;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
@@ -88,7 +88,7 @@
                 <div class="glass-card rounded-xl p-6 space-y-4">
                      <div>
                         <label for="asset-select" class="block mb-2 text-sm font-medium text-white">သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
-                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg">
+                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg text-white">
                             <option value="Gold (XAU/USD)">ရွှေ (Gold - XAU/USD)</option>
                             <option value="EUR/USD">EUR/USD</option>
                             <option value="GBP/USD">GBP/USD</option>
@@ -102,6 +102,13 @@
                             <option value="S&P 500 Index">S&P 500 Index</option>
                         </select>
                     </div>
+                    
+                    <div>
+                        <label for="news-context" class="block mb-2 text-sm font-medium text-white">နောက်ဆုံးရ သတင်းအချက်အလက်များ (Optional)</label>
+                        <textarea id="news-context" rows="3" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg text-white placeholder-gray-600" placeholder="ဥပမာ - NFP Actual: 119K, Forecast: 53K (Forex Factory မှ ကူးထည့်ပါ)"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">သတင်းထွက်ပေါ်ပြီးပါက တိကျသောသုံးသပ်ချက်ရရန် Actual Data ကို ဤနေရာတွင် ထည့်ပေးပါ။</p>
+                    </div>
+
                     <button id="fundamental-analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">သုံးသပ်ချက်ရယူပါ</button>
                 </div>
                 
@@ -177,17 +184,27 @@
     const fundamentalLoader = document.getElementById('fundamental-loader');
     const fundamentalOutput = document.getElementById('fundamental-output');
     const assetSelect = document.getElementById('asset-select');
+    const newsContextInput = document.getElementById('news-context'); // New Input
     
     fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
     
     async function getFundamentalAnalysis() {
         fundamentalLoader.style.display = 'block';
         fundamentalOutput.innerHTML = '';
+        
+        // Get current date/time to send to backend
+        const currentDateTime = new Date().toLocaleString();
+
         try {
             const response = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ selectedAsset: assetSelect.value })
+                // Updated body to include newsContext and currentDateTime
+                body: JSON.stringify({ 
+                    selectedAsset: assetSelect.value, 
+                    newsContext: newsContextInput.value,
+                    clientTime: currentDateTime 
+                })
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -204,8 +221,8 @@
     
     function displayFundamentalResults(text) {
         if (!text) {
-             fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
-             return;
+              fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
+              return;
         }
         const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
         const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
@@ -214,6 +231,12 @@
         if (summaryMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
         if (calendarMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
         if (sentimentMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
+        
+        // Fallback if regex doesn't match structured output
+        if (!html) {
+             html = `<div class="output-card glass-card rounded-xl p-6"><h3>AI သုံးသပ်ချက်</h3><div>${formatText(text)}</div></div>`;
+        }
+
         fundamentalOutput.innerHTML = html;
     }
 
@@ -229,7 +252,7 @@
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
     
     fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
-    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
+    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'); });
     fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
     function handleFile(file) {
@@ -247,7 +270,7 @@
     }
     
     async function analyzeChart(file) {
-        chartLoader.style.display = 'block'; // Spinner ကိုပြမယ်
+        chartLoader.style.display = 'block'; 
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
@@ -270,7 +293,7 @@
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none'; // Spinner ကိုပြန်ဖျောက်မယ်
+            chartLoader.style.display = 'none'; 
         }
     }
 
