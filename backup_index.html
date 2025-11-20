@@ -1,306 +1,292 @@
-
 <!DOCTYPE html>
 <html lang="my">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Financial Analyst Suite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Padauk', sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
-        }
-        .glass-card {
-            background: rgba(22, 27, 34, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .spinner {
-            border-top-color: #58a6ff;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .tab-btn {
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        .tab-btn.active {
-            color: #58a6ff;
-            border-bottom-color: #58a6ff;
-        }
-        #file-drop-zone {
-            border: 2px dashed #30363d;
-            transition: all 0.3s ease;
-        }
-        #file-drop-zone.dragover {
-            border-color: #58a6ff;
-            background-color: rgba(88, 166, 255, 0.1);
-        }
-        .output-card h3 {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: white;
-            padding-bottom: 0.75rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #30363d;
-        }
-        
-        /* New Skeleton Loader Styles */
-        .skeleton-loader {
-            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            50% {
-                opacity: .5;
-            }
-        }
-        .skeleton-bar {
-            background-color: #21262d;
-            border-radius: 4px;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Financial Analyst Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Padauk', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .glass-card {
+            background: rgba(22, 27, 34, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-        /* New Fade-in Animation */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+        /* --- Updated Spinner CSS --- */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3); /* နောက်ခံ အဖြူဖျော့ */
+            border-left-color: #22D3EE; /* Cyan အရောင် (သင်လိုချင်သောအရောင်) */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto; /* အလယ်တည့်တည့်ထားရန် */
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn.active {
+            color: #58a6ff;
+            border-bottom-color: #58a6ff;
+        }
+        #file-drop-zone {
+            border: 2px dashed #30363d;
+            transition: all 0.3s ease;
+        }
+        #file-drop-zone.dragover {
+            border-color: #58a6ff;
+            background-color: rgba(88, 166, 255, 0.1);
+        }
+        .output-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #30363d;
+        }
+
+        /* Fade-in Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body class="min-h-screen p-4 sm:p-6 md:p-8">
-    <div class="container mx-auto max-w-5xl w-full">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">AI Financial Analyst Suite</h1>
-            <p class="text-lg text-gray-400">Fundamental နှင့် Technical သုံးသပ်ချက်များကို တစ်နေရာတည်းတွင် ရယူပါ။</p>
-        </header>
+    <div class="container mx-auto max-w-5xl w-full">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">AI Financial Analyst Suite</h1>
+            <p class="text-lg text-gray-400">Fundamental နှင့် Technical သုံးသပ်ချက်များကို တစ်နေရာတည်းတွင် ရယူပါ။</p>
+        </header>
 
-        <div class="mb-6">
-            <div class="flex border-b border-gray-700">
-                <button id="fundamental-tab-btn" class="tab-btn active px-4 py-3 text-lg font-semibold">Fundamental Analysis</button>
-                <button id="chart-tab-btn" class="tab-btn px-4 py-3 text-lg font-semibold">Chart Analysis</button>
-            </div>
-        </div>
+        <div class="mb-6">
+            <div class="flex border-b border-gray-700">
+                <button id="fundamental-tab-btn" class="tab-btn active px-4 py-3 text-lg font-semibold">Fundamental Analysis</button>
+                <button id="chart-tab-btn" class="tab-btn px-4 py-3 text-lg font-semibold">Chart Analysis</button>
+            </div>
+        </div>
 
-        <main>
-            <div id="fundamental-tool">
-                <div class="glass-card rounded-xl p-6 space-y-4">
-                     <div>
-                        <label for="asset-select" class="block mb-2 text-sm font-medium text-white">သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
-                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg">
-                            <option value="Gold (XAU/USD)">ရွှေ (Gold - XAU/USD)</option>
-                            <option value="EUR/USD">EUR/USD</option>
-                            <option value="GBP/USD">GBP/USD</option>
-                            <option value="USD/JPY">USD/JPY</option>
-                            <option value="AUD/USD">AUD/USD</option>
-                            <option value="USD/CAD">USD/CAD</option>
-                            <option value="USD/CHF">USD/CHF</option>
-                            <option value="NZD/USD">NZD/USD</option>
-                            <option value="Bitcoin (BTC/USD)">Bitcoin (BTC/USD)</option>
-                            <option value="Crude Oil">ရေနံစိမ်း (Crude Oil)</option>
-                            <option value="S&P 500 Index">S&P 500 Index</option>
-                        </select>
-                    </div>
-                    <button id="fundamental-analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">သုံးသပ်ချက်ရယူပါ</button>
-                </div>
-                <div id="fundamental-loader" class="text-center py-10" style="display: none;">
-                    <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
-                    <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
-                </div>
-                <div id="fundamental-output" class="mt-6 space-y-6"></div>
-            </div>
+        <main>
+            <div id="fundamental-tool">
+                <div class="glass-card rounded-xl p-6 space-y-4">
+                     <div>
+                        <label for="asset-select" class="block mb-2 text-sm font-medium text-white">သုံးသပ်လိုသော ပစ္စည်းကိုရွေးပါ</label>
+                        <select id="asset-select" class="w-full p-2.5 bg-[#161b22] border border-[#30363d] rounded-lg">
+                            <option value="Gold (XAU/USD)">ရွှေ (Gold - XAU/USD)</option>
+                            <option value="EUR/USD">EUR/USD</option>
+                            <option value="GBP/USD">GBP/USD</option>
+                            <option value="USD/JPY">USD/JPY</option>
+                            <option value="AUD/USD">AUD/USD</option>
+                            <option value="USD/CAD">USD/CAD</option>
+                            <option value="USD/CHF">USD/CHF</option>
+                            <option value="NZD/USD">NZD/USD</option>
+                            <option value="Bitcoin (BTC/USD)">Bitcoin (BTC/USD)</option>
+                            <option value="Crude Oil">ရေနံစိမ်း (Crude Oil)</option>
+                            <option value="S&P 500 Index">S&P 500 Index</option>
+                        </select>
+                    </div>
+                    <button id="fundamental-analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">သုံးသပ်ချက်ရယူပါ</button>
+                </div>
+                
+                <div id="fundamental-loader" class="text-center py-10" style="display: none;">
+                    <div class="spinner"></div>
+                    <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
+                </div>
+                <div id="fundamental-output" class="mt-6 space-y-6"></div>
+            </div>
 
-            <div id="chart-tool" style="display: none;">
-                <div id="file-drop-zone" class="glass-card rounded-xl p-8 text-center">
-                    <label for="file-upload" class="cursor-pointer">
-                        <div class="flex flex-col items-center justify-center">
-                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <p class="mt-4 text-lg text-white">Chart ပုံကို ဒီနေရာမှာဆွဲထည့်ပါ</p>
-                            <p class="text-gray-400">သို့မဟုတ်</p>
-                            <p class="mt-2 text-[#58a6ff] font-semibold">Browse File</p>
-                        </div>
-                    </label>
-                    <input id="file-upload" type="file" class="hidden" accept="image/*">
-                    <p id="file-name" class="text-gray-400 mt-4 text-sm"></p>
-                </div>
+            <div id="chart-tool" style="display: none;">
+                <div id="file-drop-zone" class="glass-card rounded-xl p-8 text-center">
+                    <label for="file-upload" class="cursor-pointer">
+                        <div class="flex flex-col items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p class="mt-4 text-lg text-white">Chart ပုံကို ဒီနေရာမှာဆွဲထည့်ပါ</p>
+                            <p class="text-gray-400">သို့မဟုတ်</p>
+                            <p class="mt-2 text-[#58a6ff] font-semibold">Browse File</p>
+                        </div>
+                    </label>
+                    <input id="file-upload" type="file" class="hidden" accept="image/*">
+                    <p id="file-name" class="text-gray-400 mt-4 text-sm"></p>
+                </div>
 
-                <div id="chart-result-container" class="mt-6 space-y-6" style="display: none;">
-                    <div id="image-preview" class="glass-card rounded-xl p-4">
-                        <img src="" alt="Uploaded Chart" class="rounded-lg shadow-lg w-full max-h-[500px] object-contain">
-                    </div>
+                <div id="chart-result-container" class="mt-6 space-y-6" style="display: none;">
+                    <div id="image-preview" class="glass-card rounded-xl p-4">
+                        <img src="" alt="Uploaded Chart" class="rounded-lg shadow-lg w-full max-h-[500px] object-contain">
+                    </div>
 
-                    <div class="glass-card rounded-xl p-6">
-                        <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
-                        
-                        <div id="chart-loader" style="display: none;">
-                           <div class="space-y-4 skeleton-loader">
-                                <div class="h-4 skeleton-bar w-3/4"></div>
-                                <div class="space-y-2">
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-5/6"></div>
-                                </div>
-                                <div class="h-4 skeleton-bar w-1/2"></div>
-                                <div class="space-y-2">
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-3/4"></div>
-                                </div>
-                           </div>
-                        </div>
+                    <div class="glass-card rounded-xl p-6">
+                        <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
+                        
+                        <div id="chart-loader" class="text-center py-10" style="display: none;">
+                             <div class="spinner"></div>
+                             <p class="mt-4 text-gray-300">AI ဖြင့် Chart ပုံကို ခွဲခြမ်းစိတ်ဖြာနေပါသည်...</p>
+                        </div>
 
-                        <div id="chart-output" class="text-gray-300 space-y-3 leading-relaxed"></div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <footer class="text-center text-xs text-gray-500 mt-12 p-4 bg-gray-900/50 rounded-lg">
-            <p class="font-bold mb-1">သတိပြုရန်:</p>
-            <p>ဤသုံးသပ်ချက်များသည် AI မှ ပညာရေးဆိုင်ရာနှင့် သတင်းအချက်အလက်ပေးရန်အတွက်သာဖြစ်ပြီး ငွေကြေးဆိုင်ရာ အကြံပေးချက်များ လုံးဝမဟုတ်ပါ။ အရောင်းအဝယ်မပြုလုပ်မီ သင့်ကိုယ်ပိုင်လေ့လာသုံးသပ်မှုများ ပြုလုပ်ပါ။</p>
-        </footer>
-    </div>
+                        <div id="chart-output" class="text-gray-300 space-y-3 leading-relaxed"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center text-xs text-gray-500 mt-12 p-4 bg-gray-900/50 rounded-lg">
+            <p class="font-bold mb-1">သတိပြုရန်:</p>
+            <p>ဤသုံးသပ်ချက်များသည် AI မှ ပညာရေးဆိုင်ရာနှင့် သတင်းအချက်အလက်ပေးရန်အတွက်သာဖြစ်ပြီး ငွေကြေးဆိုင်ရာ အကြံပေးချက်များ လုံးဝမဟုတ်ပါ။ အရောင်းအဝယ်မပြုလုပ်မီ သင့်ကိုယ်ပိုင်လေ့လာသုံးသပ်မှုများ ပြုလုပ်ပါ။</p>
+        </footer>
+    </div>
 
 <script>
-    // --- Tab Switching Logic ---
-    const fundamentalTabBtn = document.getElementById('fundamental-tab-btn');
-    const chartTabBtn = document.getElementById('chart-tab-btn');
-    const fundamentalTool = document.getElementById('fundamental-tool');
-    const chartTool = document.getElementById('chart-tool');
+    // --- Tab Switching Logic ---
+    const fundamentalTabBtn = document.getElementById('fundamental-tab-btn');
+    const chartTabBtn = document.getElementById('chart-tab-btn');
+    const fundamentalTool = document.getElementById('fundamental-tool');
+    const chartTool = document.getElementById('chart-tool');
 
-    fundamentalTabBtn.addEventListener('click', () => {
-        fundamentalTool.style.display = 'block';
-        chartTool.style.display = 'none';
-        fundamentalTabBtn.classList.add('active');
-        chartTabBtn.classList.remove('active');
-    });
+    fundamentalTabBtn.addEventListener('click', () => {
+        fundamentalTool.style.display = 'block';
+        chartTool.style.display = 'none';
+        fundamentalTabBtn.classList.add('active');
+        chartTabBtn.classList.remove('active');
+    });
 
-    chartTabBtn.addEventListener('click', () => {
-        fundamentalTool.style.display = 'none';
-        chartTool.style.display = 'block';
-        chartTabBtn.classList.add('active');
-        fundamentalTabBtn.classList.remove('active');
-    });
+    chartTabBtn.addEventListener('click', () => {
+        fundamentalTool.style.display = 'none';
+        chartTool.style.display = 'block';
+        chartTabBtn.classList.add('active');
+        fundamentalTabBtn.classList.remove('active');
+    });
 
-    // --- Fundamental Analysis Logic (No Changes)---
-    const fundamentalAnalyzeBtn = document.getElementById('fundamental-analyze-btn');
-    const fundamentalLoader = document.getElementById('fundamental-loader');
-    const fundamentalOutput = document.getElementById('fundamental-output');
-    const assetSelect = document.getElementById('asset-select');
-    fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
-    async function getFundamentalAnalysis() {
-        fundamentalLoader.style.display = 'block';
-        fundamentalOutput.innerHTML = '';
-        try {
-            const response = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ selectedAsset: assetSelect.value })
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'API request failed');
-            }
-            const data = await response.json();
-            displayFundamentalResults(data.result);
-        } catch (error) {
-            fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">Error: ${error.message}</div>`;
-        } finally {
-            fundamentalLoader.style.display = 'none';
-        }
-    }
-    function displayFundamentalResults(text) {
-        if (!text) {
-             fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
-             return;
-        }
-        const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
-        const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
-        const sentimentMatch = text.match(/### ဈေးကွက်၏ ခံစားချက်([\s\S]*)/);
-        let html = '';
-        if (summaryMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
-        if (calendarMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
-        if (sentimentMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
-        fundamentalOutput.innerHTML = html;
-    }
+    // --- Fundamental Analysis Logic ---
+    const fundamentalAnalyzeBtn = document.getElementById('fundamental-analyze-btn');
+    const fundamentalLoader = document.getElementById('fundamental-loader');
+    const fundamentalOutput = document.getElementById('fundamental-output');
+    const assetSelect = document.getElementById('asset-select');
+    
+    fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
+    
+    async function getFundamentalAnalysis() {
+        fundamentalLoader.style.display = 'block';
+        fundamentalOutput.innerHTML = '';
+        try {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ selectedAsset: assetSelect.value })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
+            }
+            const data = await response.json();
+            displayFundamentalResults(data.result);
+        } catch (error) {
+            fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-red-400">Error: ${error.message}</div>`;
+        } finally {
+            fundamentalLoader.style.display = 'none';
+        }
+    }
+    
+    function displayFundamentalResults(text) {
+        if (!text) {
+             fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
+             return;
+        }
+        const summaryMatch = text.match(/### သတင်းအကျဉ်းချုပ်([\s\S]*?)###/);
+        const calendarMatch = text.match(/### အရေးကြီးသော စီးပွားရေးသတင်းများ([\s\S]*?)###/);
+        const sentimentMatch = text.match(/### ဈေးကွက်၏ ခံစားချက်([\s\S]*)/);
+        let html = '';
+        if (summaryMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>သတင်းအကျဉ်းချုပ်</h3><ul class="space-y-2 list-disc">${formatText(summaryMatch[1])}</ul></div>`;
+        if (calendarMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
+        if (sentimentMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
+        fundamentalOutput.innerHTML = html;
+    }
 
-    // --- Chart Analysis Logic (UPDATED) ---
-    const fileUpload = document.getElementById('file-upload');
-    const fileNameDisplay = document.getElementById('file-name');
-    const chartResultContainer = document.getElementById('chart-result-container');
-    const imagePreview = document.querySelector('#image-preview img');
-    const chartLoader = document.getElementById('chart-loader');
-    const chartOutput = document.getElementById('chart-output');
-    const fileDropZone = document.getElementById('file-drop-zone');
+    // --- Chart Analysis Logic ---
+    const fileUpload = document.getElementById('file-upload');
+    const fileNameDisplay = document.getElementById('file-name');
+    const chartResultContainer = document.getElementById('chart-result-container');
+    const imagePreview = document.querySelector('#image-preview img');
+    const chartLoader = document.getElementById('chart-loader');
+    const chartOutput = document.getElementById('chart-output');
+    const fileDropZone = document.getElementById('file-drop-zone');
 
-    fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
-    
-    fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
-    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
-    fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+    fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
+    
+    fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
+    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
+    fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
-    function handleFile(file) {
-        if (!file || !file.type.startsWith('image/')) return;
-        fileNameDisplay.textContent = `Selected: ${file.name}`;
-        chartResultContainer.style.display = 'block';
-        chartOutput.innerHTML = '';
-        chartOutput.classList.remove('fade-in');
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            imagePreview.src = reader.result;
-            analyzeChart(file);
-        };
-        reader.readAsDataURL(file);
-    }
-    
-    async function analyzeChart(file) {
-        chartLoader.style.display = 'block'; // Show skeleton loader
-        try {
-            const base64Image = await fileToBase64(file);
-            const response = await fetch('/api/analyze-chart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageData: base64Image, mimeType: file.type })
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'API request failed');
-            }
-            const data = await response.json();
-            let formattedText = data.result
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
-                .replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
-            
-            chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
-            chartOutput.classList.add('fade-in'); // Add fade-in animation
-        } catch (error) {
-            chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
-        } finally {
-            chartLoader.style.display = 'none'; // Hide skeleton loader
-        }
-    }
+    function handleFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        fileNameDisplay.textContent = `Selected: ${file.name}`;
+        chartResultContainer.style.display = 'block';
+        chartOutput.innerHTML = '';
+        chartOutput.classList.remove('fade-in');
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            imagePreview.src = reader.result;
+            analyzeChart(file);
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    async function analyzeChart(file) {
+        chartLoader.style.display = 'block'; // Spinner ကိုပြမယ်
+        try {
+            const base64Image = await fileToBase64(file);
+            const response = await fetch('/api/analyze-chart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ imageData: base64Image, mimeType: file.type })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
+            }
+            const data = await response.json();
+            let formattedText = data.result
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
+                .replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
+            
+            chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
+            chartOutput.classList.add('fade-in');
+        } catch (error) {
+            chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
+        } finally {
+            chartLoader.style.display = 'none'; // Spinner ကိုပြန်ဖျောက်မယ်
+        }
+    }
 
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
-    }
-    
-    // --- Common Formatting Function ---
-    function formatText(text) {
-        return text.trim().replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/^- (.*?)/gm, '<li>$1</li>').replace(/\n/g, '<br>');
-    }
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+    }
+    
+    // --- Common Formatting Function ---
+    function formatText(text) {
+        return text.trim().replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/^- (.*?)/gm, '<li>$1</li>').replace(/\n/g, '<br>');
+    }
 </script>
 </body>
 </html>
