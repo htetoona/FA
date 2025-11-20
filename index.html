@@ -19,14 +19,16 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        /* Spinner CSS */
+        
+        /* Spinner CSS Only (Skeleton styles removed) */
         .spinner {
-            border-top-color: #58a6ff; /* အပြာရောင် */
+            border-top-color: #58a6ff; /* Spinning color */
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
         .tab-btn {
             transition: all 0.3s ease;
             border-bottom: 2px solid transparent;
@@ -51,7 +53,7 @@
             margin-bottom: 1rem;
             border-bottom: 1px solid #30363d;
         }
-        
+
         /* Fade-in Animation */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -97,6 +99,7 @@
                     </div>
                     <button id="fundamental-analyze-btn" class="w-full bg-[#238636] hover:bg-[#2ea043] text-white font-bold py-3 px-4 rounded-lg transition">သုံးသပ်ချက်ရယူပါ</button>
                 </div>
+                
                 <div id="fundamental-loader" class="text-center py-10" style="display: none;">
                     <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
                     <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
@@ -169,7 +172,9 @@
     const fundamentalLoader = document.getElementById('fundamental-loader');
     const fundamentalOutput = document.getElementById('fundamental-output');
     const assetSelect = document.getElementById('asset-select');
+    
     fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
+    
     async function getFundamentalAnalysis() {
         fundamentalLoader.style.display = 'block';
         fundamentalOutput.innerHTML = '';
@@ -191,6 +196,7 @@
             fundamentalLoader.style.display = 'none';
         }
     }
+    
     function displayFundamentalResults(text) {
         if (!text) {
              fundamentalOutput.innerHTML = `<div class="glass-card rounded-xl p-6 text-yellow-400">No content in response.</div>`;
@@ -218,7 +224,7 @@
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
     
     fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
-    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'););
+    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
     fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
     function handleFile(file) {
@@ -236,7 +242,7 @@
     }
     
     async function analyzeChart(file) {
-        chartLoader.style.display = 'block'; // Shows the spinner
+        chartLoader.style.display = 'block'; // Show spinner
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
@@ -259,7 +265,7 @@
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none'; // Hides the spinner
+            chartLoader.style.display = 'none'; // Hide spinner
         }
     }
 
