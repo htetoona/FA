@@ -19,8 +19,9 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        /* Spinner CSS */
         .spinner {
-            border-top-color: #58a6ff;
+            border-top-color: #58a6ff; /* အပြာရောင် */
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
@@ -51,21 +52,7 @@
             border-bottom: 1px solid #30363d;
         }
         
-        /* New Skeleton Loader Styles */
-        .skeleton-loader {
-            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            50% {
-                opacity: .5;
-            }
-        }
-        .skeleton-bar {
-            background-color: #21262d;
-            border-radius: 4px;
-        }
-
-        /* New Fade-in Animation */
+        /* Fade-in Animation */
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -139,20 +126,9 @@
                     <div class="glass-card rounded-xl p-6">
                         <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
                         
-                        <div id="chart-loader" style="display: none;">
-                           <div class="space-y-4 skeleton-loader">
-                                <div class="h-4 skeleton-bar w-3/4"></div>
-                                <div class="space-y-2">
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-5/6"></div>
-                                </div>
-                                <div class="h-4 skeleton-bar w-1/2"></div>
-                                <div class="space-y-2">
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-full"></div>
-                                    <div class="h-3 skeleton-bar w-3/4"></div>
-                                </div>
-                           </div>
+                        <div id="chart-loader" class="text-center py-10" style="display: none;">
+                             <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
+                             <p class="mt-4 text-gray-300">AI ဖြင့် Chart ပုံကို ခွဲခြမ်းစိတ်ဖြာနေပါသည်...</p>
                         </div>
 
                         <div id="chart-output" class="text-gray-300 space-y-3 leading-relaxed"></div>
@@ -188,7 +164,7 @@
         fundamentalTabBtn.classList.remove('active');
     });
 
-    // --- Fundamental Analysis Logic (No Changes)---
+    // --- Fundamental Analysis Logic ---
     const fundamentalAnalyzeBtn = document.getElementById('fundamental-analyze-btn');
     const fundamentalLoader = document.getElementById('fundamental-loader');
     const fundamentalOutput = document.getElementById('fundamental-output');
@@ -230,7 +206,7 @@
         fundamentalOutput.innerHTML = html;
     }
 
-    // --- Chart Analysis Logic (UPDATED) ---
+    // --- Chart Analysis Logic ---
     const fileUpload = document.getElementById('file-upload');
     const fileNameDisplay = document.getElementById('file-name');
     const chartResultContainer = document.getElementById('chart-result-container');
@@ -242,7 +218,7 @@
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
     
     fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
-    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'));
+    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'););
     fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
     function handleFile(file) {
@@ -260,7 +236,7 @@
     }
     
     async function analyzeChart(file) {
-        chartLoader.style.display = 'block'; // Show skeleton loader
+        chartLoader.style.display = 'block'; // Shows the spinner
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
@@ -279,11 +255,11 @@
                 .replace(/\* (.*?)(<br>|$)/g, '<li class="ml-4 list-disc">$1</li>');
             
             chartOutput.innerHTML = `<ul class="space-y-2">${formattedText}</ul>`;
-            chartOutput.classList.add('fade-in'); // Add fade-in animation
+            chartOutput.classList.add('fade-in');
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none'; // Hide skeleton loader
+            chartLoader.style.display = 'none'; // Hides the spinner
         }
     }
 
