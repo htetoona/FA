@@ -19,11 +19,16 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        /* Spinner CSS Only (Skeleton styles removed) */
+
+        /* --- Updated Spinner CSS --- */
         .spinner {
-            border-top-color: #58a6ff; /* Spinning color */
+            border: 4px solid rgba(255, 255, 255, 0.3); /* နောက်ခံ အဖြူဖျော့ */
+            border-left-color: #22D3EE; /* Cyan အရောင် (သင်လိုချင်သောအရောင်) */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
+            margin: 0 auto; /* အလယ်တည့်တည့်ထားရန် */
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
@@ -101,7 +106,7 @@
                 </div>
                 
                 <div id="fundamental-loader" class="text-center py-10" style="display: none;">
-                    <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
+                    <div class="spinner"></div>
                     <p class="mt-4 text-gray-300">နောက်ဆုံးရ သတင်းအချက်အလက်များကို ရှာဖွေသုံးသပ်နေပါသည်...</p>
                 </div>
                 <div id="fundamental-output" class="mt-6 space-y-6"></div>
@@ -130,7 +135,7 @@
                         <h2 class="text-2xl font-bold text-white mb-4">AI ၏ သုံးသပ်ချက်</h2>
                         
                         <div id="chart-loader" class="text-center py-10" style="display: none;">
-                             <div class="spinner w-12 h-12 rounded-full border-4 border-gray-600 mx-auto"></div>
+                             <div class="spinner"></div>
                              <p class="mt-4 text-gray-300">AI ဖြင့် Chart ပုံကို ခွဲခြမ်းစိတ်ဖြာနေပါသည်...</p>
                         </div>
 
@@ -242,7 +247,7 @@
     }
     
     async function analyzeChart(file) {
-        chartLoader.style.display = 'block'; // Show spinner
+        chartLoader.style.display = 'block'; // Spinner ကိုပြမယ်
         try {
             const base64Image = await fileToBase64(file);
             const response = await fetch('/api/analyze-chart', {
@@ -265,7 +270,7 @@
         } catch (error) {
             chartOutput.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
         } finally {
-            chartLoader.style.display = 'none'; // Hide spinner
+            chartLoader.style.display = 'none'; // Spinner ကိုပြန်ဖျောက်မယ်
         }
     }
 
