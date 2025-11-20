@@ -184,7 +184,7 @@
     const fundamentalLoader = document.getElementById('fundamental-loader');
     const fundamentalOutput = document.getElementById('fundamental-output');
     const assetSelect = document.getElementById('asset-select');
-    const newsContextInput = document.getElementById('news-context'); // New Input
+    const newsContextInput = document.getElementById('news-context'); 
     
     fundamentalAnalyzeBtn.addEventListener('click', getFundamentalAnalysis);
     
@@ -192,14 +192,12 @@
         fundamentalLoader.style.display = 'block';
         fundamentalOutput.innerHTML = '';
         
-        // Get current date/time to send to backend
         const currentDateTime = new Date().toLocaleString();
 
         try {
             const response = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                // Updated body to include newsContext and currentDateTime
                 body: JSON.stringify({ 
                     selectedAsset: assetSelect.value, 
                     newsContext: newsContextInput.value,
@@ -232,7 +230,6 @@
         if (calendarMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>အရေးကြီးသော စီးပွားရေးသတင်းများ</h3><div>${formatText(calendarMatch[1])}</div></div>`;
         if (sentimentMatch) html += `<div class="output-card glass-card rounded-xl p-6"><h3>ဈေးကွက်၏ ခံစားချက်</h3><div>${formatText(sentimentMatch[1])}</div></div>`;
         
-        // Fallback if regex doesn't match structured output
         if (!html) {
              html = `<div class="output-card glass-card rounded-xl p-6"><h3>AI သုံးသပ်ချက်</h3><div>${formatText(text)}</div></div>`;
         }
@@ -252,7 +249,10 @@
     fileUpload.addEventListener('change', (e) => handleFile(e.target.files[0]));
     
     fileDropZone.addEventListener('dragover', (e) => { e.preventDefault(); fileDropZone.classList.add('dragover'); });
-    fileDropZone.addEventListener('dragleave', () => fileDropZone.classList.remove('dragover'); });
+    
+    // Fixed Syntax Error Here
+    fileDropZone.addEventListener('dragleave', () => { fileDropZone.classList.remove('dragover'); });
+    
     fileDropZone.addEventListener('drop', (e) => { e.preventDefault(); fileDropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
     function handleFile(file) {
@@ -306,7 +306,6 @@
         });
     }
     
-    // --- Common Formatting Function ---
     function formatText(text) {
         return text.trim().replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/^- (.*?)/gm, '<li>$1</li>').replace(/\n/g, '<br>');
     }
